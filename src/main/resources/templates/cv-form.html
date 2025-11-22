@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${cv.id == null} ? 'Yeni CV Oluştur' : 'CV Düzenle'"></title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <style>
+        .form-step {
+            display: none; /* Varsayılan olarak tüm adımları gizle */
+            padding: 20px 0;
+            border-top: 1px solid #eee;
+            margin-top: 15px;
+        }
+        .form-step.active {
+            display: block; /* Aktif adımı göster */
+        }
+        .step-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .suggestion-tip {
+            background-color: #f0f8ff; /* Açık mavi */
+            border-left: 5px solid #007bff;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 5px;
+            font-style: italic;
+            color: #333;
+        }
+        .submit-button, .next-button, .prev-button {
+            width: auto !important;
+            padding: 12px 25px;
+        }
+    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="container">
+    <h1 th:text="${cv.id == null} ? '🤖 AI Destekli SmartCV Oluşturucu' : '✍️ CV Düzenle ve Tekrar Analiz Et'"></h1>
+    <p>CV'nizi adım adım oluşturalım. Verilerinizi girdikçe AI size anında öneriler sunacak!</p>
+
+    <form th:action="${cv.id == null} ? @{/generate-cv} : @{/update-cv}" th:object="${cv}" method="post" id="cvForm" class="cv-form">
+
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="form-step active" id="step-1">
+            <h2>1. Adım: İletişim Bilgileri</h2>
+
+            <div class="suggestion-tip">
+                <p>💡 **Öneri:** CV'nizdeki bilgilerin güncel ve tutarlı olması, ilk izlenim için kritiktir. Bir e-posta adresi ve güncel bir telefon numarası yeterlidir.</p>
+            </div>
+
+            <div class="form-group">
+                <label for="name">Ad Soyad *</label>
+                <input type="text" id="name" th:field="*{name}" placeholder="Örn: Eren Yılmaz" required>
+            </div>
+            <div class="form-group">
+                <label for="email">E-posta Adresi *</label>
+                <input type="email" id="email" th:field="*{email}" placeholder="ornek@mail.com" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Telefon Numarası</label>
+                <input type="tel" id="phone" th:field="*{phone}" placeholder="Örn: +90 5XX XXX XX XX">
+            </div>
+        </div>
+
+        <div class="form-step" id="step-2">
+            <h2>2. Adım: Kariyer Özeti</h2>
+
+            <div class="suggestion-tip">
+                <p>💡 **Öneri:** Kariyer özetiniz, CV'nizin ilk 3 saniyesidir! En önemli becerilerinizi ve deneyim yılınızı vurgulayın.</p>
+                <p>_Örnek: "Spring Boot ve mikroservisler konusunda uzmanlaşmış, 2 yıllık deneyime sahip, sonuç odaklı Java geliştiricisiyim."_</p>
+            </div>
+
+            <div class="form-group">
+                <label for="summary">Kısa Özet / Kariyer Hedefi</label>
+                <textarea id="summary" th:field="*{summary}" rows="4" placeholder="Kendinizi kısaca ve etkili bir şekilde özetleyin."></textarea>
+            </div>
+        </div>
+
+        <div class="form-step" id="step-3">
+            <h2>3. Adım: Beceriler ve Eğitim</h2>
+
+            <div class="suggestion-tip">
+                <p>💡 **Öneri:** Becerilerinizi virgülden çok, kullandığınız seviyeye göre gruplayın. Eğitiminizi güncel ve en son olanı önce yazın.</p>
+                <p>_Örnek Beceri: "Java, Spring Boot (İleri Seviye), PostgreSQL, Docker, AWS (Temel)"_</p>
+            </div>
+
+            <div class="form-group">
+                <label for="skills">Beceriler * (Virgülle Ayırın)</label>
+                <textarea id="skills" th:field="*{skills}" rows="4" placeholder="Örn: Java, Spring Boot, PostgreSQL, Docker, Agile Metodolojisi" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="education">Eğitim *</label>
+                <textarea id="education" th:field="*{education}" rows="3" placeholder="Örn: XYZ Üniversitesi, Bilgisayar Mühendisliği, 2025 (Mezuniyet Yılı)" required></textarea>
+            </div>
+        </div>
+
+        <div class="form-step" id="step-4">
+            <h2>4. Adım: İş Deneyimi</h2>
+
+            <div class="suggestion-tip">
+                <p>💡 **Öneri:** Deneyimlerinizi **sayılarla** güçlendirin (metrik odaklı). STAR metodunu kullanın: Durum, Görev, Aksiyon, Sonuç (Situation, Task, Action, Result).</p>
+                <p>_Örnek: "XYZ projesinde performansı %30 artıran yeni bir mikroservis geliştirdim."_</p>
+            </div>
+
+            <div class="form-group">
+                <label for="experience">İş Deneyimi</label>
+                <textarea id="experience" th:field="*{experience}" rows="8" placeholder="En son işinizden başlayarak deneyimlerinizi detaylandırın."></textarea>
+            </div>
+        </div>
+
+        <div class="step-navigation">
+            <button type="button" class="button prev-button" onclick="changeStep(-1)" style="display: none;">← Geri</button>
+            <button type="button" class="button next-button" onclick="changeStep(1)">İleri →</button>
+
+            <button type="submit" class="submit-button" id="submitButton" style="display: none;" th:text="${cv.id == null} ? '⚡ AI ile CV Oluştur ve Analiz Et' : '🔄 Güncelle ve Tekrar Analiz Et'"></button>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    let currentStep = 1;
+    const totalSteps = 4;
+
+    const formSteps = document.querySelectorAll('.form-step');
+    const prevBtn = document.querySelector('.prev-button');
+    const nextBtn = document.querySelector('.next-button');
+    const submitBtn = document.getElementById('submitButton');
+
+    // Başlangıçta doğru adımı göster
+    showStep(currentStep);
+
+    function showStep(n) {
+        // Tüm adımları gizle
+        formSteps.forEach(step => {
+            step.classList.remove('active');
+        });
+
+        // İstenen adımı göster
+        document.getElementById(`step-${n}`).classList.add('active');
+
+        // Navigasyon butonlarını güncelle
+        updateNavigationButtons();
+    }
+
+    function updateNavigationButtons() {
+        // Geri butonu: Sadece ilk adımda gizle
+        prevBtn.style.display = currentStep === 1 ? 'none' : 'block';
+
+        // İleri butonu: Sadece son adımda gizle
+        nextBtn.style.display = currentStep === totalSteps ? 'none' : 'block';
+
+        // Gönder butonu: Sadece son adımda göster
+        submitBtn.style.display = currentStep === totalSteps ? 'block' : 'none';
+
+        // Navigasyon butonlarının görünürlüğüne göre yerleşimi ayarla
+        if (currentStep === totalSteps) {
+             prevBtn.style.marginRight = 'auto'; // Geri butonu sola itilir
+        } else if (currentStep === 1) {
+             nextBtn.style.marginLeft = 'auto'; // İleri butonu sağa itilir
+        } else {
+             prevBtn.style.marginRight = '0';
+             nextBtn.style.marginLeft = '0';
+        }
+    }
+
+    function changeStep(n) {
+        // Geçerli adımdaki gerekli alanları kontrol et (Sadece İLERİ giderken)
+        if (n === 1 && !validateCurrentStep()) {
+            return; // Doğrulama başarısız olursa ilerleme
+        }
+
+        // Yeni adım numarasını hesapla
+        currentStep += n;
+
+        // Adım sınırlarını kontrol et
+        if (currentStep > totalSteps) {
+            currentStep = totalSteps;
+        } else if (currentStep < 1) {
+            currentStep = 1;
+        }
+
+        showStep(currentStep);
+    }
+
+    function validateCurrentStep() {
+        const currentStepElement = document.getElementById(`step-${currentStep}`);
+        let isValid = true;
+
+        // Sadece required (*) alanlarını kontrol et
+        currentStepElement.querySelectorAll('[required]').forEach(input => {
+            if (!input.value.trim()) {
+                input.style.borderColor = 'red'; // Hata görseli
+                isValid = false;
+            } else {
+                input.style.borderColor = '#ddd'; // Normal renk
+            }
+        });
+
+        if (!isValid) {
+            alert('Lütfen bu adımdaki tüm gerekli (*) alanları doldurun.');
+        }
+        return isValid;
+    }
+</script>
+</body>
+</html>

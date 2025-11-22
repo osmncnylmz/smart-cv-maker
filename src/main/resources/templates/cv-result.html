@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${cv.name} + ' - CV Öneri Sonucu'"></title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div class="container result-page">
+    <h1 th:text="${cv.name} + ' İçin Yapay Zeka Raporu'"></h1>
+    <p>Girdiğiniz veriler analiz edildi. İşte **CV ID: [[${cv.id}]]** için Yapay Zeka'nın en son önerileri:</p>
+
+    <div class="ai-suggestion-box">
+        <h2>💡 Yapay Zeka Önerisi</h2>
+        <div class="suggestion-text" th:utext="${aiSuggestion}">
+        </div>
+    </div>
+
+    <div class="user-data-preview">
+        <h2>Girdiğiniz CV Verisi (Kaydedildi)</h2>
+
+        <div class="data-section">
+            <h3>İletişim</h3>
+            <p><strong>Ad Soyad:</strong> <span th:text="${cv.name}"></span></p>
+            <p><strong>E-posta:</strong> <span th:text="${cv.email}"></span></p>
+        </div>
+
+        <div class="data-section">
+            <h3>Özet & Beceriler</h3>
+            <p><strong>Kariyer Özeti:</strong> <span th:text="${cv.summary} ?: 'Özet Girilmedi.'"></span></p>
+            <p><strong>Beceriler:</strong> <span th:text="${cv.skills}"></span></p>
+        </div>
+
+        <div class="data-section">
+            <h3>Deneyim & Eğitim</h3>
+            <p><strong>Eğitim:</strong> <span th:text="${cv.education}"></span></p>
+            <p><strong>İş Deneyimi:</strong> <span th:text="${cv.experience} ?: 'Deneyim Girilmedi.'"></span></p>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <a th:href="@{/cv/{id}/edit(id=${cv.id})}" class="button edit-link">
+            ✏️ CV'yi Düzenle / Tekrar Analiz Et
+        </a>
+
+        <a th:href="@{/cv/{id}/download-pdf(id=${cv.id})}" class="button download-button">
+            ⬇️ Öneri Raporunu PDF İndir
+        </a>
+    </div>
+
+    <a th:href="@{/create}" class="button back-link" style="margin-top: 15px; background-color: #007bff !important;">+ Yeni CV Oluşturmaya Başla</a>
+
+</div>
+</body>
+</html>

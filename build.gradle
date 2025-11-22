@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.6' // Lütfen güncel Spring Boot sürümünü kullanın
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.smartcv'
+version = '0.0.1-SNAPSHOT'
+description = 'AI Supported Smart CV Maker'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // TEMEL: Web ve Şablon Motoru
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+    // VERİ KATMANI: JPA ve H2 (Kaydetme/Düzenleme için KRİTİK)
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.h2database:h2' // Geliştirme veritabanı
+
+    // AI BAĞLANTISI: WebClient (OpenAI API istekleri için KRİTİK)
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    // PDF OLUŞTURMA: iText 7
+    implementation 'com.itextpdf:itext7-core:7.2.5'
+
+    // TEST
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
